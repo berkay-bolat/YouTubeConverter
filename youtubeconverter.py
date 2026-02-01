@@ -533,11 +533,30 @@ class ProConverterApp(ctk.CTk):
 
             self.after(0, lambda: self.update_status(f"Process is completed. The file is saved as \"{os.path.basename(output_path)}\".", "lightgreen", progress=1))
 
-        except (subprocess.CalledProcessError, Exception) as e:
 
-            self.after(0, lambda: self.update_status("ERROR: An error occurred while attempting to process the file.", "red"))
+        except subprocess.CalledProcessError as e:
 
-            print(e)
+            print(f"\n--- FFMPEG ERROR ---")
+            print(f"Command: {e.cmd}")
+            print(f"Error Code: {e.returncode}")
+
+            if e.stderr:
+
+                print(f"Detailed error message:\n{e.stderr}")
+            else:
+
+                print("No error message.")
+
+            print("---------------------\n")
+
+            self.after(0, lambda: self.update_status("ERROR: FFmpeg error has occurred. Check terminal output.", "red"))
+
+
+        except Exception as e:
+
+            print(f"General Error: {e}")
+
+            self.after(0, lambda: self.update_status("ERROR: An unexpected error has occurred.", "red"))
 
         finally:
 
